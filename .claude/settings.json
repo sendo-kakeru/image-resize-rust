@@ -1,0 +1,60 @@
+{
+	"env": {
+		"BASH_DEFAULT_TIMEOUT_MS": 600000,
+		"BASH_MAX_TIMEOUT_MS": 600000
+	},
+	"permissions": {
+		"allow": [
+			"Bash(pnpm --filter @repo/env run build)",
+			"Bash(pnpm --filter @repo/db run build)",
+			"Bash(pnpm --filter @repo/shared run build)",
+			"Bash(pnpm i)",
+			"Bash(pnpm typecheck)",
+			"Bash(pnpm lint)",
+			"Bash(pnpm ci)",
+			"Bash(pnpm dev)",
+			"Bash(pnpm dev:*)",
+			"Bash(pnpm i)",
+			"Bash(pnpm build)",
+			"Bash(git status)",
+			"Bash(git diff:*)",
+			"Bash(git log:*)",
+			"Bash(git show:*)",
+			"Bash(git add:*)",
+			"Bash(git commit:*)",
+			"Bash(gh pr checkout:*)",
+			"Bash(gh pr view:*)",
+			"Bash(gh pr diff:*)",
+			"Bash(gh pr create:*)",
+			"Bash(npx tsc:*)",
+			"Bash(rg:*)",
+			"Bash(find:*)",
+			"Bash(grep:*)",
+			"Bash(xargs grep:*)",
+			"Read(./**/*)",
+			"Edit(./**/*)",
+			"MultiEdit(./**/*)",
+			"Write(./**/*)",
+			"Agent(./**/*)"
+		],
+		"defaultMode": "acceptEdits",
+		"deny": [
+			"Bash(pnpm publish:*)",
+			"Bash(npm publish:*)",
+			"Bash(rm:*)",
+			"Bash(rm -rf:*)",
+			"Bash(git stash:*)",
+			"Bash(git reflog:*)",
+			"Bash(git reset:*)",
+			"Bash(git reset --hard:*)",
+			"Write(./**/.env)",
+			"Write(./packages/api/.dev.vars)",
+			"Write(./node_modules/**)",
+			"Bash(pnpm run up)",
+			"Bash(pnpm run destroy)",
+			"Bash(pulumi up)",
+			"Bash(pulumi destroy)",
+			"WebFetch(domain:*)"
+		]
+	}
+}
