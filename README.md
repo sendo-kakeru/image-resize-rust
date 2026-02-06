@@ -1,135 +1,93 @@
-# Turborepo starter
+# Image Resize Service
 
-This Turborepo starter is maintained by the Turborepo core team.
+Cloudflare Workers (エッジキャッシュ) + Cloud Run (Rust 画像変換) + R2 (原本ストレージ) による画像リサイズ配信基盤
 
-## Using this example
-
-Run the following command:
-
-```sh
-npx create-turbo@latest
-```
-
-## What's inside?
-
-This Turborepo includes the following packages/apps:
-
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
+## アーキテクチャ
 
 ```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
+┌──────────┐         ┌─────────────────────────┐         ┌─────────────────────┐         ┌────────────┐
+│          │  GET    │  Cloudflare Workers     │  fetch  │  Cloud Run (Rust)   │ GetObj  │            │
+│ Browser  │ ──────→ │  (Hono)                 │ ──────→ │  (Axum)             │ ──────→ │  R2        │
+│          │ ←────── │                         │ ←────── │                     │ ←────── │            │
+└──────────┘  image  │  ┌───────────────────┐  │  image  │  - リサイズ          │  原本   └────────────┘
+                     │  │ Cache API         │  │         │  - フォーマット変換   │
+                     │  │ HIT → 即時返却     │  │         │  - 品質調整          │
+                     │  │ MISS → origin転送  │  │         └─────────────────────┘
+                     │  │ PUT → キャッシュ保存│  │
+                     │  └───────────────────┘  │
+                     └─────────────────────────┘
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+### リクエストフロー
 
-```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
+```mermaid
+sequenceDiagram
+    participant B as Browser
+    participant W as Workers (Hono)
+    participant C as Cache API
+    participant CR as Cloud Run (Rust)
+    participant R2 as Cloudflare R2
 
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-```
+    B->>W: GET /images/photo.jpg?w=300&h=200&f=webp&q=80
+    W->>C: cache.match(request)
 
-### Develop
-
-To develop all apps and packages, run the following command:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
-```
-
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
-
-```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
+    alt Cache HIT
+        C-->>W: cached response
+        W-->>B: 200 OK (image/webp) [X-Cache: HIT]
+    else Cache MISS
+        C-->>W: undefined
+        W->>CR: GET /transform?key=photo.jpg&w=300&h=200&f=webp&q=80
+        CR->>R2: GetObject (S3 API)
+        R2-->>CR: original image bytes
+        CR->>CR: resize + convert + quality adjust
+        CR-->>W: 200 OK (transformed image)
+        W->>C: cache.put(request, response.clone())
+        W-->>B: 200 OK (image/webp) [X-Cache: MISS]
+    end
 ```
 
-### Remote Caching
+## 技術スタック
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+| レイヤー | 技術                      | 役割                                      |
+| -------- | ------------------------- | ----------------------------------------- |
+| Edge     | Cloudflare Workers + Hono | キャッシュ・ルーティング・アップロード    |
+| Origin   | Cloud Run + Rust (Axum)   | 画像変換 (リサイズ / フォーマット / 品質) |
+| Storage  | Cloudflare R2             | 原本画像の保存 (S3 互換)                  |
+| Client   | React (Vite)              | 動作確認 UI                               |
+| IaC      | Pulumi (TypeScript)       | インフラのコード管理                      |
+| CI/CD    | GitHub Actions            | 自動テスト・デプロイ                      |
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+## プロジェクト構成
 
 ```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
+packages/
+├── cdn/               # Cloudflare Workers (Hono)
+├── image-processor/   # Cloud Run (Rust / Axum)
+├── client/            # React Client (Vite)
+└── infra/             # Pulumi (TypeScript)
 ```
 
-## Useful Links
+## API
 
-Learn more about the power of Turborepo:
+### 画像取得
 
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+```
+GET /images/:key?w=<width>&h=<height>&f=<format>&q=<quality>
+```
+
+| パラメータ | 説明         | 例                           |
+| ---------- | ------------ | ---------------------------- |
+| `w`        | 幅 (px)      | `300`                        |
+| `h`        | 高さ (px)    | `200`                        |
+| `f`        | フォーマット | `jpg`, `png`, `webp`, `avif` |
+| `q`        | 品質 (1-100) | `80`                         |
+
+### 画像アップロード (動作確認用)
+
+```
+PUT /images/:key
+```
+
+## ドキュメント
+
+- [設計書](docs/DESIGN.md)
