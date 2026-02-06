@@ -47,6 +47,33 @@ sequenceDiagram
     end
 ```
 
+### 2.3 ドメイン設計
+
+ベースドメイン: `sendo-app.com`
+
+| サブドメイン            | コンポーネント        | ホスティング       | 用途                                   |
+| ----------------------- | --------------------- | ------------------ | -------------------------------------- |
+| `image.sendo-app.com`     | Edge (CDN/Cache)      | Cloudflare Workers | 画像配信・アップロードの公開エンドポイント |
+| `client.sendo-app.com`  | Client (動作確認)     | Cloudflare Workers | React クライアント (動作確認用 UI)      |
+
+- **Cloud Run**: カスタムドメイン不要。デフォルトの `.run.app` ドメインを使用（Workers からの内部アクセスのみ）
+- **R2**: パブリックアクセス不要。S3 互換 API 経由で Cloud Run からのみアクセス
+
+#### DNS レコード
+
+| レコード | ホスト    | 値                           | プロキシ |
+| -------- | --------- | ---------------------------- | -------- |
+| CNAME    | `img`     | Workers カスタムドメイン設定 | ON (橙)  |
+| CNAME    | `client`  | Workers カスタムドメイン設定 | ON (橙)  |
+
+#### キャッシュキー URL
+
+```
+https://image.sendo-app.com/images/photo.jpg?f=webp&h=200&q=80&w=300
+```
+
+クエリパラメータはアルファベット順にソートされる。
+
 ---
 
 ## 3. API 設計
@@ -208,7 +235,7 @@ Workers の Cache API はリクエスト URL をキーとする。
 クエリパラメータを含む完全な URL がキーになるため、パラメータの組み合わせごとにキャッシュされる。
 
 ```
-https://images.example.com/images/photo.jpg?w=300&h=200&f=webp&q=80
+https://image.sendo-app.com/images/photo.jpg?w=300&h=200&f=webp&q=80
 ```
 
 **正規化**: クエリパラメータをアルファベット順にソートし、同一パラメータセットが異なるキーにならないようにする。
