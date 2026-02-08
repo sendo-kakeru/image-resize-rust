@@ -1,0 +1,10 @@
+config:
+  cloudflare:apiToken:
+    secure: AAABAMDVz20DuAeueii5+YFe4vvZ8WFUZ1yyp6jKm7s+FvWEZ7zE7ywO26aswUJiDC/cUN+Qv26RRoEdTaMvCGLAKM2Y/pYR
+  gcp:project: develop-435913
+  app:accountId: 0517e69826f6ec40af51eb27bb30e5a4
+  # app:r2Endpoint: https://0517e69826f6ec40af51eb27bb30e5a4.r2.cloudflarestorage.com
+  # app:r2AccessKeyId:
+  #   secure: AAABAF9kdbXCSTCqPtqj6TJLfUFglydDG/ZOYsD+MGJjEgtdOaCQVQKki+k+sUm+HKQVN13qcglyX+1ANcP+mw==
+  # app:r2SecretAccessKey:
+  #   secure: AAABADtlL4RHdTwpyMtDZTqHrIrSfUTloHJmAOnCtpVCgRbe3IsukY2LHX7+vOCkuSgo5Q8X7XdvbUJ858Rai2XkKFBMI4teWh6yj/Z+3+t8NgdWvZAToRozhDNI5axO

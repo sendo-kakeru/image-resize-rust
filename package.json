@@ -1,20 +1,22 @@
 {
-  "name": "image-resize-rust",
-  "private": true,
-  "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev",
-    "lint": "turbo run lint",
-    "format": "turbo run format",
-    "typecheck": "turbo run typecheck"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "^2.3.14",
-    "turbo": "^2.8.3",
-    "typescript": "5.9.3"
-  },
-  "packageManager": "pnpm@10.28.2",
-  "engines": {
-    "node": "24.13.0"
-  }
+	"name": "image-resize-rust",
+	"private": true,
+	"scripts": {
+		"build": "turbo run build",
+		"dev": "turbo run dev",
+		"lint": "turbo run lint",
+		"format": "turbo run format",
+		"infra:up": "turbo run infra:up",
+		"infra:destroy": "turbo run infra:destroy",
+		"typecheck": "turbo run typecheck"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.3.14",
+		"turbo": "^2.8.3",
+		"typescript": "5.9.3"
+	},
+	"packageManager": "pnpm@10.28.2",
+	"engines": {
+		"node": "24.13.0"
+	}
 }

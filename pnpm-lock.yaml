@@ -96,6 +96,9 @@ importers:
 
   packages/infra:
     devDependencies:
+      '@pulumi/cloudflare':
+        specifier: ^6.13.0
+        version: 6.13.0(typescript@5.9.3)
       '@pulumi/gcp':
         specifier: ^9.0.0
         version: 9.11.0(typescript@5.9.3)
@@ -108,9 +111,6 @@ importers:
       '@types/node':
         specifier: ^24.0.0
         version: 24.10.11
-      dotenv:
-        specifier: ^17.2.3
-        version: 17.2.4
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -948,6 +948,9 @@ packages:
   '@protobufjs/utf8@1.1.0':
     resolution: {integrity: sha512-Vvn3zZrhQZkkBE8LSuW3em98c0FwgO4nxzv6OdSxPKJIEKY2bGbHn+mhGIPerzI4twdxaP8/0+06HBpwf345Lw==}
 
+  '@pulumi/cloudflare@6.13.0':
+    resolution: {integrity: sha512-M3tMo5/1S2NgOiCBhrN6gUYZg50/59HlAYQ1NsLkfb7prgH4aSdh7R01wgXlBQPu2BtiZswCtAigMdyAXVA+Ig==}
+
   '@pulumi/gcp@9.11.0':
     resolution: {integrity: sha512-PMjKbpeKTeNIAzZf8nCF2MPlUinMtGfRUaG2E6ktAgiP7CNApebQ1+ThifExCYwJ3Uer9j7FA0ukd2x9yFoSmA==}
 
@@ -1433,10 +1436,6 @@ packages:
   detect-libc@2.1.2:
     resolution: {integrity: sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ==}
     engines: {node: '>=8'}
-
-  dotenv@17.2.4:
-    resolution: {integrity: sha512-mudtfb4zRB4bVvdj0xRo+e6duH1csJRM8IukBqfTRvHotn9+LBXB8ynAidP9zHqoRC/fsllXgk4kCKlR21fIhw==}
-    engines: {node: '>=12'}
 
   eastasianwidth@0.2.0:
     resolution: {integrity: sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==}
@@ -3426,6 +3425,14 @@ snapshots:
 
   '@protobufjs/utf8@1.1.0': {}
 
+  '@pulumi/cloudflare@6.13.0(typescript@5.9.3)':
+    dependencies:
+      '@pulumi/pulumi': 3.219.0(typescript@5.9.3)
+    transitivePeerDependencies:
+      - supports-color
+      - ts-node
+      - typescript
+
   '@pulumi/gcp@9.11.0(typescript@5.9.3)':
     dependencies:
       '@npmcli/package-json': 6.2.0
@@ -3946,8 +3953,6 @@ snapshots:
   defer-to-connect@2.0.1: {}
 
   detect-libc@2.1.2: {}
-
-  dotenv@17.2.4: {}
 
   eastasianwidth@0.2.0: {}
 

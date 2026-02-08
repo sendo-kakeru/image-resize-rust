@@ -2,22 +2,22 @@
 	"name": "@repo/infra",
 	"main": "index.ts",
 	"devDependencies": {
+		"@pulumi/cloudflare": "^6.13.0",
+		"@pulumi/gcp": "^9.0.0",
+		"@pulumi/pulumi": "^3.113.0",
 		"@repo/typescript-config": "workspace:*",
 		"@types/node": "^24.0.0",
-		"dotenv": "^17.2.3",
 		"typescript": "^5.9.3",
-		"valibot": "^1.2.0",
-		"@pulumi/gcp": "^9.0.0",
-		"@pulumi/pulumi": "^3.113.0"
+		"valibot": "^1.2.0"
 	},
 	"license": "UNLICENSED",
 	"private": true,
 	"scripts": {
-		"destroy": "RUN_TYPE=DESTROY pulumi up -y && pulumi destroy -y",
+		"infra:destroy": "pulumi destroy -y",
 		"format": "biome check --fix --unsafe .",
 		"lint": "biome check .",
 		"typecheck": "tsc --noEmit",
-		"up": "pulumi up -y"
+		"infra:up": "pulumi up -y"
 	},
 	"version": "1.0.0"
 }
