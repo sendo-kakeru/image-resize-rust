@@ -142,10 +142,18 @@ Body: <binary>
 #### 画像変換
 
 ```
-GET /transform?key=<key>&w=<width>&h=<height>&f=<format>&q=<quality>
+GET /transform/{*key}?w=<width>&h=<height>&f=<format>&q=<quality>
 ```
 
-パラメータは Workers と同一。Workers からのみ呼び出される。
+| パラメータ | 型            | 必須 | デフォルト | 説明                                                                                 |
+| ---------- | ------------- | ---- | ---------- | ------------------------------------------------------------------------------------ |
+| `key`      | string (path) | Yes  | -          | R2 上のオブジェクトキー（ワイルドカードパス、スラッシュを含む場合は URL エンコード） |
+| `w`        | number        | No   | 原本幅     | 出力幅 (px)                                                                          |
+| `h`        | number        | No   | 原本高     | 出力高 (px)                                                                          |
+| `f`        | string        | No   | 原本形式   | 出力フォーマット (`jpg`, `png`, `webp`, `avif`)                                      |
+| `q`        | number        | No   | 80         | 品質 (1-100, JPEG/AVIF のみ有効。PNG/WebP はロスレス固定)                            |
+
+Workers からのみ呼び出される。
 変換パラメータがすべて省略された場合は R2 の原本をそのまま返却する。
 
 ---
@@ -374,12 +382,12 @@ CMD ["image-processor"]
 {ベース名}-{env}
 ```
 
-| リソース          | STG                    | Prod                    |
-| ----------------- | ---------------------- | ----------------------- |
-| R2 バケット       | `image-store-stg`      | `image-store-prod`      |
-| Artifact Registry | `image-processor-stg`  | `image-processor-prod`  |
-| Cloud Run         | `image-processor-stg`  | `image-processor-prod`  |
-| Workers (CDN)     | `cdn-stg`              | `cdn-prod`              |
+| リソース          | STG                   | Prod                   |
+| ----------------- | --------------------- | ---------------------- |
+| R2 バケット       | `image-store-stg`     | `image-store-prod`     |
+| Artifact Registry | `image-processor-stg` | `image-processor-prod` |
+| Cloud Run         | `image-processor-stg` | `image-processor-prod` |
+| Workers (CDN)     | `cdn-stg`             | `cdn-prod`             |
 
 ### 11.3 Pulumi スタック構成
 
@@ -415,11 +423,11 @@ wrangler deploy --env prod  # Prod デプロイ
 
 インフラ構築とアプリデプロイを分離する。
 
-| 責務 | ツール | タイミング |
-| --- | --- | --- |
-| インフラ構築 (AR, Cloud Run サービス定義, R2, IAM) | `pulumi up` | インフラ変更時のみ |
-| アプリデプロイ (新イメージの反映) | `gcloud run deploy` | CI (ブランチマージ時) |
-| Workers デプロイ | `wrangler deploy --env {env}` | CI (ブランチマージ時) |
+| 責務                                               | ツール                        | タイミング            |
+| -------------------------------------------------- | ----------------------------- | --------------------- |
+| インフラ構築 (AR, Cloud Run サービス定義, R2, IAM) | `pulumi up`                   | インフラ変更時のみ    |
+| アプリデプロイ (新イメージの反映)                  | `gcloud run deploy`           | CI (ブランチマージ時) |
+| Workers デプロイ                                   | `wrangler deploy --env {env}` | CI (ブランチマージ時) |
 
 - Pulumi はサービスの初期作成と設定変更（メモリ、環境変数、IAM 等）を管理
 - コンテナイメージの更新は `gcloud run deploy` で行い、Pulumi は `ignoreChanges` でイメージフィールドを無視
