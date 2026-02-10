@@ -4,13 +4,14 @@
 	"main": "src/index.ts",
 	"compatibility_date": "2026-02-06",
 	"vars": {
-		"ORIGIN_URL": "http://localhost:8080"
+		"ORIGIN_URL": "http://localhost:8080",
+		"CLIENT_URL": "http://localhost:5173"
 	},
 	"r2_buckets": [
 		{
 			"binding": "IMAGE_STORE",
-			"remote": true,
-			"bucket_name": "image-store-dev"
+			"bucket_name": "image-store-dev",
+			"remote": true
 		}
 	],
 	"observability": {
@@ -20,7 +21,8 @@
 		"stg": {
 			"name": "cdn-stg",
 			"vars": {
-				"ORIGIN_URL": "https://image-processor-stg-<hash>.a.run.app"
+				"ORIGIN_URL": "https://image-processor-stg-<hash>.a.run.app",
+				"CLIENT_URL": "https://stg-client.sendo-app.com"
 			},
 			"r2_buckets": [
 				{
@@ -32,7 +34,8 @@
 		"prod": {
 			"name": "cdn-prod",
 			"vars": {
-				"ORIGIN_URL": "https://image-processor-prod-<hash>.a.run.app"
+				"ORIGIN_URL": "https://image-processor-prod-<hash>.a.run.app",
+				"CLIENT_URL": "https://client.sendo-app.com"
 			},
 			"r2_buckets": [
 				{

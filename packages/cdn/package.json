@@ -1,7 +1,8 @@
 {
 	"dependencies": {
 		"@repo/shared": "workspace:*",
-		"hono": "^4.11.7"
+		"hono": "^4.11.7",
+		"valibot": "^1.2.0"
 	},
 	"devDependencies": {
 		"@repo/tsup-config": "workspace:*",
