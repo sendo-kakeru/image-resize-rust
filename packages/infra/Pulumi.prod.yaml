@@ -1,0 +1,5 @@
+config:
+  cloudflare:apiToken:
+    secure: AAABAGpfsVCDLlVIqL8BtuG56GOStunbOcQEyEQh3ajf7KEBnlJxYpUp5agLopvGgPkLcZeEny3pKlxyx3vk34CmutsclV8V
+  gcp:project: develop-435913
+  app:accountId: 0517e69826f6ec40af51eb27bb30e5a4

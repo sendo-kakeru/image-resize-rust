@@ -1,6 +1,16 @@
 import { useCallback, useRef, useState } from "react";
+import type { Route } from "./+types/home";
 
-const CDN_URL = import.meta.env.VITE_CDN_URL || "http://localhost:8787";
+export function meta(_args: Route.MetaArgs) {
+	return [
+		{ title: "画像配信システム デモ" },
+		{ name: "description", content: "画像のアップロードとリサイズプレビュー" },
+	];
+}
+
+export function loader({ context }: Route.LoaderArgs) {
+	return { cdnUrl: context.cloudflare.env.CDN_URL };
+}
 
 type ImageParams = {
 	width: number;
@@ -9,7 +19,9 @@ type ImageParams = {
 	quality: number;
 };
 
-function App() {
+export default function Home({ loaderData }: Route.ComponentProps) {
+	const CDN_URL = loaderData.cdnUrl;
+
 	const [uploadedKey, setUploadedKey] = useState<string | null>(null);
 	const [uploading, setUploading] = useState(false);
 	const [dragActive, setDragActive] = useState(false);
@@ -22,7 +34,6 @@ function App() {
 	const [cacheStatus, setCacheStatus] = useState<string>("");
 	const fileInputRef = useRef<HTMLInputElement>(null);
 
-	// ドラッグ&ドロップハンドラー
 	const handleDrag = useCallback((e: React.DragEvent) => {
 		e.preventDefault();
 		e.stopPropagation();
@@ -33,25 +44,26 @@ function App() {
 		}
 	}, []);
 
-	// 画像アップロード処理（純粋関数）
-	const uploadImage = useCallback(async (file: File): Promise<string> => {
-		const key = `test/${Date.now()}_${file.name}`;
-		const response = await fetch(
-			`${CDN_URL}/images?key=${encodeURIComponent(key)}`,
-			{
-				method: "PUT",
-				body: file,
-			},
-		);
+	const uploadImage = useCallback(
+		async (file: File): Promise<string> => {
+			const key = `test/${Date.now()}_${file.name}`;
+			const response = await fetch(
+				`${CDN_URL}/images?key=${encodeURIComponent(key)}`,
+				{
+					method: "PUT",
+					body: file,
+				},
+			);
 
-		if (!response.ok) {
-			throw new Error(`Upload failed: ${response.statusText}`);
-		}
+			if (!response.ok) {
+				throw new Error(`Upload failed: ${response.statusText}`);
+			}
 
-		return key;
-	}, []);
+			return key;
+		},
+		[CDN_URL],
+	);
 
-	// ファイルアップロード（UI ロジック）
 	const handleFile = useCallback(
 		async (file: File) => {
 			if (!file.type.startsWith("image/")) {
@@ -63,7 +75,7 @@ function App() {
 			try {
 				const key = await uploadImage(file);
 				setUploadedKey(key);
-				setCacheStatus(""); // リセット
+				setCacheStatus("");
 			} catch (error) {
 				console.error("Upload error:", error);
 				alert(
@@ -99,7 +111,6 @@ function App() {
 		fileInputRef.current?.click();
 	};
 
-	// 画像 URL を生成
 	const getImageUrl = () => {
 		if (!uploadedKey) return "";
 		const searchParams = new URLSearchParams({
@@ -110,14 +121,6 @@ function App() {
 		return `${CDN_URL}/images/${uploadedKey}?${searchParams}`;
 	};
 
-	/**
-	 * 画像読み込み完了時に X-Cache ヘッダーを取得してキャッシュ状態を表示。
-	 *
-	 * 注: img タグの src と同じ URL に fetch リクエストを発行するため、
-	 * ブラウザキャッシュから取得される（実際のデータ転送は発生しない）。
-	 * より効率的な実装として HEAD メソッドの使用も検討可能だが、
-	 * CDN 側でのサポートが必要。
-	 */
 	const handleImageLoad = async () => {
 		if (!uploadedKey) return;
 		try {
@@ -315,5 +318,3 @@ function App() {
 		</div>
 	);
 }
-
-export default App;
