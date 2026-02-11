@@ -21,6 +21,9 @@ COPY src ./src
 RUN touch src/main.rs
 RUN cargo build --release
 
+# Debug: check shared library dependencies
+RUN ldd /app/target/release/image-processor
+
 # Stage 2: Runtime
 FROM gcr.io/distroless/cc-debian12
 
