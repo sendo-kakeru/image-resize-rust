@@ -1,0 +1,28 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "client",
+	"compatibility_date": "2026-02-06",
+	"site": {
+		"bucket": "./dist"
+	},
+	"env": {
+		"stg": {
+			"name": "client-stg",
+			"routes": [
+				{
+					"pattern": "stg-client.sendo-app.com",
+					"zone_name": "sendo-app.com"
+				}
+			]
+		},
+		"prod": {
+			"name": "client-prod",
+			"routes": [
+				{
+					"pattern": "client.sendo-app.com",
+					"zone_name": "sendo-app.com"
+				}
+			]
+		}
+	}
+}

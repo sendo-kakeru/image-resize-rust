@@ -1,0 +1,28 @@
+name: Deploy CDN Staging
+on:
+  push:
+    branches:
+      - staging
+permissions:
+  contents: read
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: staging
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
+
+      - name: Build dependencies packages
+        run: pnpm turbo run build --filter @repo/shared
+
+      - name: Deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: packages/cdn
+          command: deploy --env stg

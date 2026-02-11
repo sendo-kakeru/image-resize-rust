@@ -1,0 +1,32 @@
+name: CI
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+permissions:
+  contents: read
+jobs:
+  typecheck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
+
+      - name: Typecheck
+        run: pnpm turbo run typecheck
+
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
+
+      - name: Lint
+        run: pnpm turbo run lint

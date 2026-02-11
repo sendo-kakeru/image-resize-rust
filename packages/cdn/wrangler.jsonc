@@ -20,6 +20,12 @@
 	"env": {
 		"stg": {
 			"name": "cdn-stg",
+			"routes": [
+				{
+					"pattern": "stg-image.sendo-app.com",
+					"zone_name": "sendo-app.com"
+				}
+			],
 			"vars": {
 				"ORIGIN_URL": "https://image-processor-stg-<hash>.a.run.app",
 				"CLIENT_URL": "https://stg-client.sendo-app.com"
@@ -33,6 +39,12 @@
 		},
 		"prod": {
 			"name": "cdn-prod",
+			"routes": [
+				{
+					"pattern": "image.sendo-app.com",
+					"zone_name": "sendo-app.com"
+				}
+			],
 			"vars": {
 				"ORIGIN_URL": "https://image-processor-prod-<hash>.a.run.app",
 				"CLIENT_URL": "https://client.sendo-app.com"
