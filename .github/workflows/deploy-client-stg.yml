@@ -11,7 +11,7 @@ jobs:
     environment: staging
     timeout-minutes: 60
     env:
-      VITE_CDN_URL: ${{ vars.VITE_CDN_URL }}
+      CLOUDFLARE_ENV: staging
     steps:
       - uses: actions/checkout@v6
 
@@ -26,8 +26,8 @@ jobs:
         working-directory: packages/client
 
       - name: Deploy
-        run: pnpm wrangler deploy --env stg
-        working-directory: packages/client
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: packages/client

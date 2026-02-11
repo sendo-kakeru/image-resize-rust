@@ -51,4 +51,5 @@ jobs:
           gcloud run deploy ${{ env.SERVICE_NAME }} \
             --image ${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.REPOSITORY }}/image-processor:${{ github.sha }} \
             --region ${{ env.GCP_REGION }} \
-            --project ${{ env.GCP_PROJECT_ID }}
+            --project ${{ env.GCP_PROJECT_ID }} \
+            --set-env-vars "R2_ENDPOINT=${{ vars.R2_ENDPOINT }},R2_ACCESS_KEY_ID=${{ secrets.R2_ACCESS_KEY_ID }},R2_SECRET_ACCESS_KEY=${{ secrets.R2_SECRET_ACCESS_KEY }},R2_BUCKET_NAME=${{ vars.R2_BUCKET_NAME }}"

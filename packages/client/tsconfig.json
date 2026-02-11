@@ -1,7 +1,18 @@
 {
-	"files": [],
-	"references": [
-		{ "path": "./tsconfig.app.json" },
-		{ "path": "./tsconfig.node.json" }
+	"compilerOptions": {
+		"baseUrl": ".",
+		"jsx": "react-jsx",
+		"paths": {
+			"~/*": ["./app/*"]
+		},
+		"rootDirs": [".", "./.react-router/types"],
+		"types": ["node", "vite/client"]
+	},
+	"extends": "@repo/typescript-config/base.json",
+	"include": [
+		"**/*",
+		"**/.server/**/*",
+		"**/.client/**/*",
+		".react-router/types/**/*"
 	]
 }

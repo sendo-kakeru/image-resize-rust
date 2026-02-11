@@ -2,8 +2,9 @@
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "client",
 	"compatibility_date": "2026-02-06",
-	"site": {
-		"bucket": "./dist"
+	"main": "./workers/app.ts",
+	"vars": {
+		"CDN_URL": "http://localhost:8787"
 	},
 	"env": {
 		"stg": {
@@ -13,7 +14,10 @@
 					"pattern": "stg-client.sendo-app.com",
 					"zone_name": "sendo-app.com"
 				}
-			]
+			],
+			"vars": {
+				"CDN_URL": "https://stg-image.sendo-app.com"
+			}
 		},
 		"prod": {
 			"name": "client-prod",
@@ -22,7 +26,10 @@
 					"pattern": "client.sendo-app.com",
 					"zone_name": "sendo-app.com"
 				}
-			]
+			],
+			"vars": {
+				"CDN_URL": "https://image.sendo-app.com"
+			}
 		}
 	}
 }
