@@ -14,10 +14,7 @@
 		"staging": {
 			"name": "client-stg",
 			"routes": [
-				{
-					"pattern": "stg-client.sendo-app.com",
-					"zone_name": "sendo-app.com"
-				}
+				{ "custom_domain": true, "pattern": "stg-client.sendo-app.com" }
 			],
 			"vars": {
 				"CDN_URL": "https://stg-image.sendo-app.com"
@@ -25,12 +22,7 @@
 		},
 		"production": {
 			"name": "client-prod",
-			"routes": [
-				{
-					"pattern": "client.sendo-app.com",
-					"zone_name": "sendo-app.com"
-				}
-			],
+			"routes": [{ "custom_domain": true, "pattern": "client.sendo-app.com" }],
 			"vars": {
 				"CDN_URL": "https://image.sendo-app.com"
 			}
