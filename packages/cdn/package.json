@@ -8,7 +8,7 @@
 		"@repo/tsup-config": "workspace:*",
 		"@repo/typescript-config": "workspace:*",
 		"@types/node": "^24.0.0",
-		"wrangler": "^4.61.1"
+		"wrangler": "^4.64.0"
 	},
 	"exports": {
 		".": "./dist/index.d.ts"
