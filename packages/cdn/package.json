@@ -1,14 +1,14 @@
 {
 	"dependencies": {
 		"@repo/shared": "workspace:*",
-		"hono": "^4.11.7",
+		"hono": "^4.11.9",
 		"valibot": "^1.2.0"
 	},
 	"devDependencies": {
 		"@repo/tsup-config": "workspace:*",
 		"@repo/typescript-config": "workspace:*",
-		"@types/node": "^24.0.0",
-		"wrangler": "^4.61.1"
+		"@types/node": "^24.10.13",
+		"wrangler": "^4.64.0"
 	},
 	"exports": {
 		".": "./dist/index.d.ts"
