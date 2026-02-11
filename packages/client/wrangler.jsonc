@@ -7,7 +7,7 @@
 		"CDN_URL": "http://localhost:8787"
 	},
 	"env": {
-		"stg": {
+		"staging": {
 			"name": "client-stg",
 			"routes": [
 				{
@@ -19,7 +19,7 @@
 				"CDN_URL": "https://stg-image.sendo-app.com"
 			}
 		},
-		"prod": {
+		"production": {
 			"name": "client-prod",
 			"routes": [
 				{

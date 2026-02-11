@@ -5,14 +5,16 @@
 	"version": "1.0.0",
 	"type": "module",
 	"scripts": {
-		"dev": "react-router dev",
 		"build": "react-router build",
-		"preview": "vite preview",
-		"deploy": "wrangler deploy",
+		"cf-typegen": "wrangler types",
+		"deploy": "pnpm run build && wrangler deploy",
+		"dev": "react-router dev",
+		"format": "biome check --fix --unsafe .",
 		"lint": "biome check .",
-		"typecheck": "react-router typegen && tsc --noEmit",
-		"typegen": "react-router typegen",
-		"cf-typegen": "wrangler types --env-interface Env"
+		"preview": "pnpm run build && vite preview",
+		"start": "react-router-serve ./build/server/index.js",
+		"typecheck": "pnpm run cf-typegen && react-router typegen && tsc --noEmit",
+		"typegen": "react-router typegen"
 	},
 	"dependencies": {
 		"@repo/cdn": "workspace:*",
